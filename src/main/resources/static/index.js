@@ -10,7 +10,7 @@ $(async function () {
 const userFetchService = {
     head: {
         'Accept': 'application/json',
-        'Content-Type': 'application/json',
+        'Content-Type': 'application/json;utf-8',
         'Referer': null
     },
     // bodyAdd : async function(user) {return {'method': 'POST', 'headers': this.head, 'body': user}},
