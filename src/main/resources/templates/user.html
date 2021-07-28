@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        .height_change{
+            height: 100vh;
+        }
+    </style>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous">
+</head>
+<body>
+<nav class="navbar navbar-fixed-top navbar-dark bg-dark">
+    <div class="container-fluid">
+        <a class="navbar-brand h1" >
+            <p style="display: inline;" th:text="${logged.getUsername()}"></p>
+            <p style="display: inline;">with roles: </p>
+            <p style="display: inline;" th:each="role : ${logged.getRoles()}" th:text="*{role.getRole()}"></p>
+        </a>
+        <ul class="navbar-nav">
+            <li class="nav-item">
+                <a href="javascript: document.logoutForm.submit()" role="menuitem" class="nav-link">Logout</a>
+                <form name="logoutForm" th:action="@{/logout}" method="post" th:hidden="true">
+                    <input hidden type="submit" value="Sign Out"/>
+                </form>
+            </li>
+        </ul>
+    </div>
+</nav>
+<div class="d-flex align-items-start height_change">
+    <div class="nav col-2 height_change flex-column nav-pills" id="v-pills-tab11" role="tablist"
+         aria-orientation="vertical">
+        <button class="nav-link active text-start" style="margin-top: 15px;" id="v-pills-profile-tab"
+                data-bs-toggle="pill" data-bs-target="#v-pills-profile2" type="button" role="tab"
+                aria-controls="v-pills-profile2" aria-selected="true">User</button>
+    </div>
+    <div class="tab-content col-10" id="v-pills-tabContent">
+        <div class="tab-pane fade show active" id="v-pills-profile2" role="tabpanel"
+             aria-labelledby="v-pills-profile-tab2">
+            <div class="bg-light height_change">
+                <h1 style="padding-top: 15px; padding-left: 15px;">User information-page</h1>
+                <div class="card" style="margin-right: 15px; margin-left: 15px;">
+                    <div class="card-header"><strong>About user</strong></div>
+                    <div class="card-body">
+                        <table class="table table-striped">
+                            <thead>
+                            <tr>
+                                <th scope="col">ID</th>
+                                <th scope="col">Age</th>
+                                <th scope="col">Name</th>
+                                <th scope="col">Weight</th>
+                                <th scope="col">Role</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr>
+                                <td th:text="${logged.getId()}"></td>
+                                <td th:text="${logged.getUsername()}"></td>
+                                <td th:text="${logged.getAge()}"></td>
+                                <td th:text="${logged.getWeight()}"></td>
+                                <td>
+                                    <p th:each="rol : ${logged.getRoles()}" th:text="*{rol.getRole()}"></p>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet"
+      integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous">
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-gtEjrD/SeCtmISkJkNUaaKMoLD0//ElJ19smozuHV6z3Iehds+3Ulb9Bn9Plx0x4" crossorigin="anonymous">
+</script>
+</body>
+</html>
