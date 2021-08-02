@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 import web.dao.RoleDAO;
+import web.model.Role;
 import web.model.User;
 import web.service.UserService;
 
@@ -33,6 +34,15 @@ public class RestAdminController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
         return new ResponseEntity<>(users, HttpStatus.OK);
+    }
+
+    @GetMapping("/roles")
+    public ResponseEntity<List<Role>> getRoles(){
+        List<Role> roles = this.roleDAO.listRoles();
+        if (roles.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(roles, HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
@@ -68,8 +78,7 @@ public class RestAdminController {
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<User> update(@RequestBody @Valid User user, @PathVariable(name = "id") int id,
-                         UriComponentsBuilder builder){
+    public ResponseEntity<User> update(@RequestBody @Valid User user, @PathVariable(name = "id") int id){
         HttpHeaders headers = new HttpHeaders();
         if (user == null) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);

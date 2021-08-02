@@ -15,9 +15,10 @@ const userFetchService = {
     },
     // bodyAdd : async function(user) {return {'method': 'POST', 'headers': this.head, 'body': user}},
     findAllUsers: async () => await fetch('http://localhost:8080/api'),
-    findOneUser: async (id) => await fetch(`api/${id}`),
+    findAllRoles: async () => await fetch('http://localhost:8080/api/roles'),
+    findOneUser: async (id) => await fetch(`http://localhost:8080/api/${id}`),
     addNewUser: async (user) => await fetch('api/', {method: 'POST',  headers: userFetchService.head, body: JSON.stringify(user)}),
-    updateUser: async (user, id) => await fetch(`api/${id}`, {method: 'PATCH', headers: userFetchService.head, body: JSON.stringify(user)}),
+    updateUser: async (user, id) => await fetch(`http://localhost:8080/api/${id}`, {method: 'PATCH', headers: userFetchService.head, body: JSON.stringify(user)}),
     deleteUser: async (id) => await fetch(`api/${id}`, {method: 'DELETE', headers: userFetchService.head})
 }
 
@@ -36,10 +37,14 @@ async function getTableWithUsers() {
                             <td>${user.name}</td>
                             <td>${user.weight}</td>
                             <td>
-              
-                </td>
+                               
+                                ${user.authorities.map(function (role){
+                                    return `<p style="display: inline;">${role.name.substr(5) + " "}</p>`
+                }) }
+
+                            </td>
                             <td>
-                                <button type="button" data-userid="${user.id}" data-action="edit" class="btn btn-secondary" 
+                                <button type="button" data-userid="${user.id}" data-action="edit" class="btn btn-info" 
                                 data-toggle="modal" data-target="#someDefaultModal">Edit</button>
                             </td>
                             <td>
@@ -69,17 +74,7 @@ async function getTableWithUsers() {
 async function getNewUserForm() {
     let button = $(`#SliderNewUserForm`);
     let form = $(`#defaultSomeForm`)
-    button.on('click', () => {
-        if (form.attr("data-hidden") === "true") {
-            form.attr('data-hidden', 'false');
-            form.show();
-            button.text('Hide panel');
-        } else {
-            form.attr('data-hidden', 'true');
-            form.hide();
-            button.text('Show panel');
-        }
-    })
+    form.show();
 }
 
 
@@ -113,17 +108,22 @@ async function getDefaultModal() {
 // редактируем юзера из модалки редактирования, забираем данные, отправляем
 async function editUser(modal, id) {
     let preuser = await userFetchService.findOneUser(id);
+    let roless = await userFetchService.findAllRoles();
+
     let user = preuser.json();
+    let roles = roless.json();
 
     modal.find('.modal-title').html('Edit user');
 
-    let editButton = `<button  type="button" class="btn btn-success" id="editButton">Edit</button>`;
-    let closeButton = `<button type="button" form="editUser" type="submit" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>`
+    let editButton = `<button  type="button" class="btn btn-primary" id="editButton">Edit</button>`;
+    let closeButton = `<button form="editUser" type="submit" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>`
+
     modal.find('.modal-footer').append(editButton);
     modal.find('.modal-footer').append(closeButton);
 
     user.then(user => {
-        let bodyForm = `
+        roles.then(roles=>{
+            let bodyForm = `
             <form class="form-group" id="editUser">
             <label for="idA" class="form-label ">ID</label>
                 <input type="text" class="form-control" id="idA" name="id" value="${user.id}" disabled><br>
@@ -131,30 +131,44 @@ async function editUser(modal, id) {
                 <input type="text" class="form-control" id="nameA" name="name" value="${user.name}"><br>
                 <label for="ageA" class="form-label ">Age</label>
                 <input type="text" class="form-control" id="ageA" name="age" value="${user.age}"><br>
-                <label for="weightA" class="form-label ">Weight</label>
+                <label for="weightA" class="form-label ">Weight</label> 
                 <input type="text" class="form-control" id="weightA" name="weight" value="${user.weight}"><br>
                 <label for="passwordA" class="form-label ">Password</label>
                 <input class="form-control" type="text" id="passwordA" value="${user.password}"><br>        
+                <label>Roles
+                <select multiple size=${roles.length} name="roles"
+                 class="form-control" id="rolesA" style="text-align:center;">
+                 ${roles.map(function (role){
+                return `<option value="${role.id}">${role.name}</option>`})}
+                </select>
+                <br/>
+                </label>
             </form>
         `;
-        modal.find('.modal-body').append(bodyForm);
+            modal.find('.modal-body').append(bodyForm);
+        })
     })
-
     $("#editButton").on('click', async () => {
         let id = modal.find("#idA").val().trim();
         let name = modal.find("#nameA").val().trim();
         let age = modal.find("#ageA").val().trim();
         let weight = modal.find("#weightA").val().trim();
         let password = modal.find("#passwordA").val().trim();
+        let rolesA = modal.find("#rolesA").val();
         let data = {
             id: id,
             name: name,
             age: age,
             weight: weight,
-            password: password
+            password: password,
+            roles: [
+                {
+                    id: 0,
+                    name: String(rolesA),
+                    users: null
+                }
+            ]
         }
-        console.log(data);
-        console.log(id);
 
         const response = await userFetchService.updateUser(data, id);
 
@@ -163,8 +177,6 @@ async function editUser(modal, id) {
             modal.modal('hide');
         } else {
             let body = await response.json();
-            console.log(body);
-            console.log(body.info);
             let alert = `<div class="alert alert-danger alert-dismissible fade show col-12" role="alert" id="sharaBaraMessageError">
                             ${body.info}
                             <button type="button" class="close" data-dismiss="alert" aria-label="Close">
@@ -187,25 +199,38 @@ async function deleteUser(modal, id) {
 }
 
 async function addNewUser() {
-    $('#addNewUserButton').click(async () =>  {
+    $('#AddNewUserButton').click(async () =>  {
         let addUserForm = $('#defaultSomeForm')
-        let login = addUserForm.find('#AddNewUserLogin').val().trim();
-        let password = addUserForm.find('#AddNewUserPassword').val().trim();
-        let age = addUserForm.find('#AddNewUserAge').val().trim();
+
+        let name = addUserForm.find("#AddNewUserName").val().trim();
+        let age = addUserForm.find("#AddNewUserAge").val().trim();
+        let weight = addUserForm.find("#AddNewUserWeight").val().trim();
+        let password = addUserForm.find("#AddNewUserPassword").val().trim();
+        let rolesA = addUserForm.find("#AddNewUserRole").val();
         let data = {
-            login: login,
+            name: name,
+            age: age,
+            weight: weight,
             password: password,
-            age: age
+            roles: [
+                {
+                    id: 0,
+                    name: String(rolesA),
+                    users: null
+                }
+            ]
         }
         const response = await userFetchService.addNewUser(data);
         if (response.ok) {
-            getTableWithUsers();
-            addUserForm.find('#AddNewUserLogin').val('');
-            addUserForm.find('#AddNewUserPassword').val('');
+            await getTableWithUsers();
+            addUserForm.find('#AddNewUserName').val('');
             addUserForm.find('#AddNewUserAge').val('');
+            addUserForm.find('#AddNewUserWeight').val('');
+            addUserForm.find('#AddNewUserPassword').val('');
+            addUserForm.find('#AddNewUserRole').val('');
         } else {
             let body = await response.json();
-            let alert = `<div class="alert alert-danger alert-dismissible fade show col-12" role="alert" id="sharaBaraMessageError">
+            let alert = `<div class="alert alert-danger    alert-dismissible fade show col-12" role="alert" id="sharaBaraMessageError">
                             ${body.info}
                             <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                                 <span aria-hidden="true">&times;</span>

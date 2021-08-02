@@ -18,7 +18,7 @@
     <a class="navbar-brand h1" >
       <p style="display: inline;" th:text="${logged.getUsername()}"></p>
       <p style="display: inline;">with roles: </p>
-      <p style="display: inline;" th:each="role : ${logged.getRoles()}" th:text="*{role.getRole()}"></p>
+      <p style="display: inline;" th:each="role : ${logged.getRoles()}" th:text="*{role.getRole().replaceAll('ROLE_','')}"></p>
     </a>
     <ul class="navbar-nav">
       <li class="nav-item">
@@ -72,155 +72,6 @@
                   </tr>
                   </thead>
                   <tbody id="all_users_content">
-                <!-- <tr th:each="msg : ${list}">
-                    <td th:text="${msg.getId()}"></td>
-                    <td th:text="${msg.getUsername()}"></td>
-                    <td th:text="${msg.getAge()}"></td>
-                    <td th:text="${msg.getWeight()}"></td>
-                    <td>
-                      <p style="display: inline;" th:each="rol : ${msg.getRoles()}" th:text="*{rol.getRole()}"></p>
-                    </td>
-                    <td>
-                      <button type="button" class="btn btn-info" data-bs-toggle="modal"
-                              th:attr="data-bs-target=${'#edit'+msg.id}">Edit
-                      </button>
-                      <div th:attr="id=${'edit' + msg.id}" class="modal fade" tabindex="-1"
-                           aria-labelledby="staticBackdropLabel" aria-hidden="true">
-                        <div class="modal-dialog">
-                          <div class="modal-content">
-                            <div class="modal-header">
-                              <h5 class="modal-title" id="staticBackdropLabel">Edit User</h5>
-                              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
-                              </button>
-                            </div>
-                            <div class="modal-body">
-                              <div class="container" style="text-align:center; width: 75%; padding: 10px;">
-                                <form th:id="${'edituser' + msg.id}" th:method="PATCH"
-                                      th:action="@{/admin/{id}(id=${msg.getId()})}" th:object="${msg}">
-                                  <div class="form-group">
-                                    <div class="mb-3">
-                                      <label for="id2" class="form-label ">ID</label>
-                                      <input disabled type="text" th:value="${msg.getId()}" class="form-control"
-                                             id="id2" th:name="id">
-                                    </div>
-                                  </div>
-                                  <div class="form-group">
-                                    <div class="mb-3">
-                                      <label for="name2" class="form-label ">Name</label>
-                                      <input type="text" th:value="${msg.getName()}" class="form-control"
-                                             id="name2" th:name="name">
-                                    </div>
-                                  </div>
-                                  <div class="form-group">
-                                    <div class="mb-3">
-                                      <label for="password2" class="form-label">Password</label>
-                                      <input type="password" th:value="${msg.getPassword()}" class="form-control"
-                                             id="password2" th:name="password">
-                                    </div>
-                                  </div>
-                                  <div class="form-group">
-                                    <div class="mb-3">
-                                      <label for="age2" class="form-label">Age</label>
-                                      <input type="text" th:value="${msg.getAge()}" class="form-control"
-                                             id="age2" th:name="age">
-                                    </div>
-                                  </div>
-                                  <div class="form-group">
-                                    <div class="mb-3">
-                                      <label for="weight2" class="form-label">Weight</label>
-                                      <input type="text" th:value="${msg.getWeight()}" class="form-control"
-                                             id="weight2" th:name="weight">
-                                    </div>
-                                  </div>
-                                  <div class="form-group">
-                                    <label>Roles
-                                      <select multiple th:size="${allRoles.size()}" name="roles"
-                                              class="form-control" id="exampleFormControlSelect1">
-                                        <option th:each="role : ${allRoles}"
-                                                th:value="${role.getId()}"
-                                                th:text="${role.getRole()}"></option>
-                                      </select>
-                                      <br/>
-                                    </label>
-                                  </div>
-                                </form>
-                              </div>
-                            </div>
-                            <div class="modal-footer">
-                              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                              <button th:form="${'edituser' + msg.id}" type="submit" class="btn btn-primary">
-                                Edit</button>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </td>
-                    <td>
-                      <button type="button" class="btn btn-danger"
-                              data-bs-toggle="modal"
-                              th:attr="data-bs-target=${'#delete'+msg.id}">Delete</button>
-                      <div th:attr="id=${'delete' + msg.id}" class="modal fade" tabindex="-1"
-                           aria-labelledby="staticBackdropLabel1" aria-hidden="true">
-                        <div class="modal-dialog">
-                          <div class="modal-content">
-                            <div class="modal-header">
-                              <h5 class="modal-title" id="staticBackdropLabel1">Delete User</h5>
-                              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
-
-                              </button>
-                            </div>
-                            <div class="modal-body">
-                              <div class="container" style="text-align:center; width: 75%; padding: 10px;">
-                                <form th:id="${'deleteuser' + msg.id}" th:method="DELETE"
-                                      th:action="@{/admin/{id}(id=${msg.getId()})}" th:object="${msg}">
-                                  <div class="form-group">
-                                    <div class="mb-3">
-                                      <label for="id3" class="form-label ">ID</label>
-                                      <input disabled type="text" th:value="${msg.getId()}" class="form-control"
-                                             id="id3" th:name="id">
-                                    </div>
-                                  </div>
-                                  <div class="form-group">
-                                    <div class="mb-3">
-                                      <label for="name3" class="form-label ">Name</label>
-                                      <input disabled type="text" th:value="${msg.getName()}" class="form-control"
-                                             id="name3" th:name="name">
-                                    </div>
-                                  </div>
-                                  <div class="form-group">
-                                    <div class="mb-3">
-                                      <label for="password3" class="form-label">Password</label>
-                                      <input disabled type="password" th:value="${msg.getPassword()}"
-                                             class="form-control" id="password3" th:name="password">
-                                    </div>
-                                  </div>
-                                  <div class="form-group">
-                                    <div class="mb-3">
-                                      <label for="age3" class="form-label">Age</label>
-                                      <input disabled type="text" th:value="${msg.getAge()}" class="form-control"
-                                             id="age3" th:name="age">
-                                    </div>
-                                  </div>
-                                  <div class="form-group">
-                                    <div class="mb-3">
-                                      <label for="weight3" class="form-label">Weight</label>
-                                      <input disabled type="text" th:value="${msg.getWeight()}" class="form-control"
-                                             id="weight3" th:name="weight">
-                                    </div>
-                                  </div>
-                                </form>
-                              </div>
-                            </div>
-                            <div class="modal-footer">
-                              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                              <button th:form="${'deleteuser' + msg.id}" type="submit" class="btn btn-danger">
-                                Delete</button>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </td>
-                  </tr>-->
                   </tbody>
                 </table>
               </div>
@@ -230,37 +81,40 @@
             <div class="card" style="margin-right: 15px; margin-left: 15px;">
               <div class="card-header"><strong>Add New User</strong></div>
               <div class="card-body">
-                <div class="container" style="text-align:center; width: 30%; padding: 10px;">
-                  <form th:method="POST" th:action="@{/admin}" th:object="${user}">
-                    <div class="mb-3">
-                      <label for="name" class="form-label ">Name</label>
-                      <input type="text" th:field="*{name}" class="form-control col-3" id="name">
-                    </div>
-                    <div class="mb-3">
-                      <label for="password" class="form-label">Password</label>
-                      <input type="password" th:field="*{password}" class="form-control" id="password">
-                    </div>
-                    <div class="mb-3">
-                      <label for="age" class="form-label">Age</label>
-                      <input type="text" th:field="*{age}" class="form-control" id="age">
-                    </div>
-                    <div class="mb-3">
-                      <label for="weight" class="form-label">Weight</label>
-                      <input type="text" th:field="*{weight}" class="form-control" id="weight">
-                    </div>
-                    <div class="mb-3">
-                      <label>Roles
-                        <select th:class="form-control" multiple th:size="${allRoles.size()}"
-                                name="roles" class="form-control"
-                                id="FormControlSelect">
-                          <option th:each="role : ${allRoles}" th:value="${role.getId()}"
-                                  th:text="${role.getRole()}"></option>
-                        </select>
-                      </label>
+                <div class="container-fluid">
+                  <div class="d-flex justify-content-center">
+
+                    <div class="container" style="text-align:center; width: 30%; padding: 10px;">
+                      <form id="defaultSomeForm" data-hidden=true style="display: none">
+                        <div class="mb-3">
+                          <input class="form-control" id="AddNewUserName" type="text" placeholder="name"><br>
+                        </div>
+                        <div class="mb-3">
+                          <input class="form-control" id="AddNewUserPassword" type="password" placeholder="password"><br>
+                        </div>
+                        <div class="mb-3">
+                          <input class="form-control" id="AddNewUserAge" type="number" placeholder="age"><br>
+                        </div>
+                        <div class="mb-3">
+                          <input class="form-control" id="AddNewUserWeight" type="text" placeholder="weight"><br>
+                        </div>
+                        <div class="mb-3">
+                          <label style="text-align:center;">Roles
+                            <select multiple th:size="${allRoles.size()}" name="roles"
+                                    class="form-control" id="AddNewUserRole" style="text-align:center;">
+                              <option th:each="role : ${allRoles}"
+                                      th:value="${role.getId()}"
+                                      th:text="${role.getRole()}"></option>
+                            </select>
+                            <br/>
+                          </label>
+                        </div>
+
+                        <button class="btn btn-success mb-2" type="button" id="AddNewUserButton">Add new user</button>
+                      </form>
                     </div>
 
-                    <button type="submit" class="btn btn-success">Add New User</button>
-                  </form>
+                  </div>
                 </div>
               </div>
             </div>
