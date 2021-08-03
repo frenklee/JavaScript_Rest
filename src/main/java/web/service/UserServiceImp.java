@@ -48,8 +48,14 @@ public class UserServiceImp implements UserService {
     public void updateUser(int id, User user) {
         Set<Role> rol1 = new HashSet<>();
         for (Role role: user.getRoles()) {
-
-            rol1.add(roleDAO.getRoleById(Integer.parseInt(role.getName())));
+            if(!role.getName().equals("")){
+                rol1.add(roleDAO.getRoleById(Integer.parseInt(role.getName())));
+            } else {
+               for (Role existingRole: userDAO.getUser(id).getRoles()){
+                   rol1.add(existingRole);
+               }
+               break;
+            }
         }
         user.setRoles(rol1);
         user.setPassword(passwordEncoder.encode((user.getPassword())));
