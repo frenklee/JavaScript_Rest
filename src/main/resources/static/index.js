@@ -155,19 +155,42 @@ async function editUser(modal, id) {
         let weight = modal.find("#weightA").val().trim();
         let password = modal.find("#passwordA").val().trim();
         let rolesA = modal.find("#rolesA").val();
-        let data = {
-            id: id,
-            name: name,
-            age: age,
-            weight: weight,
-            password: password,
-            roles: [
-                {
-                    id: 0,
-                    name: String(rolesA),
-                    users: null
-                }
-            ]
+        let data;
+        if(rolesA.length>1){
+            data = {
+                id: id,
+                name: name,
+                age: age,
+                weight: weight,
+                password: password,
+                roles: [
+                    {
+                        id: 0,
+                        name: String(rolesA[0]),
+                        users: null
+                    },
+                    {
+                        id: 1,
+                        name: String(rolesA[1]),
+                        users: null
+                    }
+                ]
+            }
+        } else {
+            data = {
+                id: id,
+                name: name,
+                age: age,
+                weight: weight,
+                password: password,
+                roles: [
+                    {
+                        id: 0,
+                        name: String(rolesA),
+                        users: null
+                    }
+                ]
+            }
         }
 
         const response = await userFetchService.updateUser(data, id);
@@ -207,18 +230,40 @@ async function addNewUser() {
         let weight = addUserForm.find("#AddNewUserWeight").val().trim();
         let password = addUserForm.find("#AddNewUserPassword").val().trim();
         let rolesA = addUserForm.find("#AddNewUserRole").val();
-        let data = {
-            name: name,
-            age: age,
-            weight: weight,
-            password: password,
-            roles: [
-                {
-                    id: 0,
-                    name: String(rolesA),
-                    users: null
-                }
-            ]
+        let data;
+        if(rolesA.length>1){
+            data = {
+                name: name,
+                age: age,
+                weight: weight,
+                password: password,
+                roles: [
+                    {
+                        id: 0,
+                        name: String(rolesA[0]),
+                        users: null
+                    },
+                    {
+                        id: 1,
+                        name: String(rolesA[1]),
+                        users: null
+                    }
+                ]
+            }
+        } else {
+            data = {
+                name: name,
+                age: age,
+                weight: weight,
+                password: password,
+                roles: [
+                    {
+                        id: 0,
+                        name: String(rolesA),
+                        users: null
+                    }
+                ]
+            }
         }
         const response = await userFetchService.addNewUser(data);
         if (response.ok) {
@@ -228,6 +273,7 @@ async function addNewUser() {
             addUserForm.find('#AddNewUserWeight').val('');
             addUserForm.find('#AddNewUserPassword').val('');
             addUserForm.find('#AddNewUserRole').val('');
+            $('#table-tab').click();
         } else {
             let body = await response.json();
             let alert = `<div class="alert alert-danger    alert-dismissible fade show col-12" role="alert" id="sharaBaraMessageError">
